@@ -30,7 +30,22 @@ const run = async () => {
             const services = await cursor.toArray();
             res.send(services);
         });
-        
+        // get single service
+        app.get("/services/:serviceId", async (req, res) => {
+            const { serviceId } = req.params;
+
+            const query = {
+                _id: ObjectId(serviceId),
+            };
+            const service = await serviceCollection.findOne(query);
+            res.send(service);
+        });
+        // create new service
+        app.post("/services", async (req, res) => {
+            const serviceObject = req.body;
+            const newService = await serviceCollection.insertOne(serviceObject);
+            res.send(newService);
+        });
     } finally {
     }
 };
