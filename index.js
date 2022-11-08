@@ -40,16 +40,16 @@ const run = async () => {
             }
             res.status(200).json(services);
         });
-        // get single service
-        app.get("/services/:serviceId", async (req, res) => {
-            const { serviceId } = req.params;
 
+        // get service by serviceId
+        app.get("/services/:serviceId", async(req, res)=>{
             const query = {
-                _id: ObjectId(serviceId),
-            };
+                _id: ObjectId(req.params.serviceId)
+            }
             const service = await serviceCollection.findOne(query);
-            res.status(200).json(service);
-        });
+            res.status(200).json(service)
+        })
+       
         // create new service
         app.post("/services", async (req, res) => {
             const serviceObject = req.body;
