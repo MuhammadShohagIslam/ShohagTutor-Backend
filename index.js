@@ -47,6 +47,7 @@ const run = async () => {
                 _id: ObjectId(req.params.serviceId)
             }
             const service = await serviceCollection.findOne(query);
+            console.log(service);
             res.status(200).json(service)
         })
        
