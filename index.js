@@ -22,9 +22,8 @@ const run = async () => {
         const serviceCollection = client
             .db("foodService")
             .collection("services");
-        const blogCollection = client
-            .db("foodService")
-            .collection("blogs");
+        const blogCollection = client.db("foodService").collection("blogs");
+        const reviewCollection = client.db("foodService").collection("reviews");
 
         // get all services
         app.get("/services", async (req, res) => {
@@ -42,20 +41,19 @@ const run = async () => {
         });
 
         // get service by serviceId
-        app.get("/services/:serviceId", async(req, res)=>{
+        app.get("/services/:serviceId", async (req, res) => {
             const query = {
-                _id: ObjectId(req.params.serviceId)
-            }
+                _id: ObjectId(req.params.serviceId),
+            };
             const service = await serviceCollection.findOne(query);
-            console.log(service);
-            res.status(200).json(service)
-        })
-       
+            res.status(200).json(service);
+        });
+
         // create new service
         app.post("/services", async (req, res) => {
             const serviceObject = req.body;
             const newService = await serviceCollection.insertOne(serviceObject);
-            res.send(newService);
+            res.status(201).json(newService);
         });
 
         // get all blog
@@ -63,6 +61,24 @@ const run = async () => {
             const query = {};
             const blogs = await blogCollection.find(query).toArray();
             res.status(200).json(blogs);
+        });
+
+        // create a new review
+        app.post("/reviews", async (req, res) => {
+            console.log(req.body)
+            const { serviceId, name, img, email, body, star } = req.body;
+            const reviewObj = {
+                serviceId,
+                email,
+                name,
+                img,
+                body,
+                star,
+                reviewedAt: Date.now(),
+            };
+            const newReview = await reviewCollection.insertOne(reviewObj);
+            console.log(newReview);
+            res.status(201).json(newReview);
         });
     } finally {
     }
