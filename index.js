@@ -65,20 +65,43 @@ const run = async () => {
 
         // create a new review
         app.post("/reviews", async (req, res) => {
-            console.log(req.body)
-            const { serviceId, name, img, email, body, star } = req.body;
-            const reviewObj = {
-                serviceId,
-                email,
-                name,
-                img,
-                body,
-                star,
-                reviewedAt: Date.now(),
-            };
-            const newReview = await reviewCollection.insertOne(reviewObj);
-            console.log(newReview);
-            res.status(201).json(newReview);
+            try {
+                const { serviceId, name, img, email, body, star } = req.body;
+                const reviewObj = {
+                    serviceId,
+                    email,
+                    name,
+                    img,
+                    body,
+                    star,
+                    reviewedAt: Date.now(),
+                };
+                const isExitsReview = await reviewCollection
+                    .find({ serviceId, email })
+                    .toArray();
+                if (isExitsReview.length > 0) {
+                    res.status(400).json({ message: "Review Already Exits" });
+                    return;
+                }
+                const newReview = await reviewCollection.insertOne(reviewObj);
+                console.log(newReview);
+                res.status(201).json(newReview);
+            } catch (error) {
+                res.status(400).send({ message: error.message });
+            }
+        });
+
+        // get all reviews
+        app.get("/reviews", async (req, res) => {
+            let reviews;
+            if (req.query.id) {
+                reviews = await reviewCollection
+                    .find({ serviceId: req.query.id })
+                    .toArray();
+            } else {
+                reviews = await reviewCollection.find({}).toArray();
+            }
+            res.status(200).json(reviews);
         });
     } finally {
     }
