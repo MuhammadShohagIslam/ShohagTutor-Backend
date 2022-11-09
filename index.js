@@ -66,9 +66,10 @@ const run = async () => {
         // create a new review
         app.post("/reviews", async (req, res) => {
             try {
-                const { serviceId, name, img, email, body, star } = req.body;
+                const { serviceId,serviceName, name, img, email, body, star } = req.body;
                 const reviewObj = {
                     serviceId,
+                    serviceName,
                     email,
                     name,
                     img,
@@ -102,6 +103,15 @@ const run = async () => {
                 reviews = await reviewCollection.find({}).toArray();
             }
             res.status(200).json(reviews);
+        });
+        // get all reviews by specific user
+        app.get("/reviews", async (req, res) => {
+            if (req.query.name) {
+                const reviews = await reviewCollection
+                    .find({ name: req.query.name })
+                    .toArray();
+                res.status(200).json(reviews);
+            }
         });
     } finally {
     }
