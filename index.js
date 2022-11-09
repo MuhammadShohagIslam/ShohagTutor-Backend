@@ -29,7 +29,7 @@ const run = async () => {
         app.get("/services", async (req, res) => {
             const query = {};
             const sort = {
-                createdAt: -1
+                createdAt: -1,
             };
             let services;
             if (req.query.limit) {
@@ -39,7 +39,10 @@ const run = async () => {
                     .limit(parseInt(req.query.limit))
                     .toArray();
             } else {
-                services = await serviceCollection.find(query).sort(sort).toArray();
+                services = await serviceCollection
+                    .find(query)
+                    .sort(sort)
+                    .toArray();
             }
             res.status(200).json(services);
         });
@@ -101,7 +104,6 @@ const run = async () => {
                     return;
                 }
                 const newReview = await reviewCollection.insertOne(reviewObj);
-                console.log(newReview);
                 res.status(201).json(newReview);
             } catch (error) {
                 res.status(400).send({ message: error.message });
@@ -114,6 +116,7 @@ const run = async () => {
             if (req.query.id) {
                 reviews = await reviewCollection
                     .find({ serviceId: req.query.id })
+                    .sort({ reviewedAt: -1 })
                     .toArray();
             } else {
                 reviews = await reviewCollection.find({}).toArray();
@@ -135,7 +138,6 @@ const run = async () => {
                 _id: ObjectId(req.params.reviewId),
             };
             const review = await reviewCollection.findOne(query);
-            console.log(review);
             res.status(200).json(review);
         });
 
@@ -156,7 +158,6 @@ const run = async () => {
                 query,
                 updateDocument
             );
-            console.log(updatedReview);
             res.status(200).json(updatedReview);
         });
 
@@ -166,7 +167,6 @@ const run = async () => {
                 _id: ObjectId(req.params.reviewId),
             };
             const removedReview = await reviewCollection.deleteOne(query);
-            console.log(removedReview);
             res.status(200).json(removedReview);
         });
     } finally {
