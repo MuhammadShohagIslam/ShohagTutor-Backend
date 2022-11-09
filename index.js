@@ -28,14 +28,18 @@ const run = async () => {
         // get all services
         app.get("/services", async (req, res) => {
             const query = {};
+            const sort = {
+                createdAt: -1
+            };
             let services;
             if (req.query.limit) {
                 services = await serviceCollection
                     .find(query)
+                    .sort(sort)
                     .limit(parseInt(req.query.limit))
                     .toArray();
             } else {
-                services = await serviceCollection.find(query).toArray();
+                services = await serviceCollection.find(query).sort(sort).toArray();
             }
             res.status(200).json(services);
         });
@@ -51,7 +55,11 @@ const run = async () => {
 
         // create new service
         app.post("/services", async (req, res) => {
-            const serviceObject = req.body;
+            const serviceObject = {
+                ...req.body,
+                createdAt: Date.now(),
+            };
+
             const newService = await serviceCollection.insertOne(serviceObject);
             res.status(201).json(newService);
         });
@@ -66,15 +74,22 @@ const run = async () => {
         // create a new review
         app.post("/reviews", async (req, res) => {
             try {
-                const { serviceId, serviceName, name, img, email, body, star } =
-                    req.body;
+                const {
+                    serviceId,
+                    serviceName,
+                    name,
+                    img,
+                    email,
+                    comment,
+                    star,
+                } = req.body;
                 const reviewObj = {
                     serviceId,
                     serviceName,
                     email,
                     name,
                     img,
-                    body,
+                    comment,
                     star,
                     reviewedAt: Date.now(),
                 };
@@ -122,6 +137,27 @@ const run = async () => {
             const review = await reviewCollection.findOne(query);
             console.log(review);
             res.status(200).json(review);
+        });
+
+        // update review by reviewId
+        app.put("/reviews/:reviewId", async (req, res) => {
+            const { comment, star } = req.body;
+
+            const query = {
+                _id: ObjectId(req.params.reviewId),
+            };
+            const updateDocument = {
+                $set: {
+                    comment: comment,
+                    star: star,
+                },
+            };
+            const updatedReview = await reviewCollection.updateOne(
+                query,
+                updateDocument
+            );
+            console.log(updatedReview);
+            res.status(200).json(updatedReview);
         });
 
         // delete review by reviewId
