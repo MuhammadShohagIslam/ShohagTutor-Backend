@@ -66,7 +66,8 @@ const run = async () => {
         // create a new review
         app.post("/reviews", async (req, res) => {
             try {
-                const { serviceId,serviceName, name, img, email, body, star } = req.body;
+                const { serviceId, serviceName, name, img, email, body, star } =
+                    req.body;
                 const reviewObj = {
                     serviceId,
                     serviceName,
@@ -112,6 +113,16 @@ const run = async () => {
                     .toArray();
                 res.status(200).json(reviews);
             }
+        });
+
+        // delete review by reviewId
+        app.delete("/reviews/:reviewId", async (req, res) => {
+            const query = {
+                _id: ObjectId(req.params.reviewId),
+            };
+            const removedReview = await reviewCollection.deleteOne(query);
+            console.log(removedReview);
+            res.status(200).json(removedReview);
         });
     } finally {
     }
