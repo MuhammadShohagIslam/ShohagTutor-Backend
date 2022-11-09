@@ -114,6 +114,15 @@ const run = async () => {
                 res.status(200).json(reviews);
             }
         });
+        // get review by reviewId
+        app.get("/reviews/:reviewId", async (req, res) => {
+            const query = {
+                _id: ObjectId(req.params.reviewId),
+            };
+            const review = await reviewCollection.findOne(query);
+            console.log(review);
+            res.status(200).json(review);
+        });
 
         // delete review by reviewId
         app.delete("/reviews/:reviewId", async (req, res) => {
