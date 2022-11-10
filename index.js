@@ -183,17 +183,15 @@ const run = async () => {
         app.get("/reviews/user", verifyJWT, async (req, res) => {
             try {
                 const decodedUser = req.decoded;
-                if (decodedUser.name !== req.query.name) {
+                if (
+                    decodedUser.name !== req.query.name ||
+                    decodedUser.email !== req.query.email
+                ) {
                     res.status(401).send({ message: "Unauthorize Access" });
                 }
                 if (req.query.email || req.query.name) {
                     const reviews = await reviewCollection
-                        .find({
-                            $or: [
-                                { name: req.query.name },
-                                { email: req.query.email },
-                            ],
-                        })
+                        .find({ email: req.query.email })
                         .toArray();
                     res.status(200).json(reviews);
                 }
