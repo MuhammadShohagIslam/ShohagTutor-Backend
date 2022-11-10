@@ -265,9 +265,9 @@ const run = async () => {
 run().catch((error) => console.log(error));
 
 app.get("/", (req, res) => {
-    res.send("Cloud Kitchen server is running");
+    res.send("Shohag Tutor server is running");
 });
 
 app.listen(port, () => {
-    console.log(`Cloud Kitchen server is running on ${port}`);
+    console.log(`Shohag Tutor server is running on ${port}`);
 });
